@@ -1,6 +1,7 @@
+
 import { useEffect, useState } from 'react'
 
-function useFetch(url) {
+export default function useFetch(url) {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -8,7 +9,7 @@ function useFetch(url) {
   useEffect(() => {
     const controller = new AbortController()
 
-    async function fetchData() {
+    async function loadData() {
       try {
         setLoading(true)
         setError('')
@@ -18,7 +19,7 @@ function useFetch(url) {
         })
 
         if (!response.ok) {
-          throw new Error('Error al cargar los datos')
+          throw new Error('No se pudieron cargar los datos')
         }
 
         const result = await response.json()
@@ -34,12 +35,9 @@ function useFetch(url) {
       }
     }
 
-    fetchData()
-
+    loadData()
     return () => controller.abort()
   }, [url])
 
   return { data, loading, error }
 }
-
-export default useFetch

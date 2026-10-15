@@ -1,76 +1,52 @@
 
 import useFetch from '../hooks/useFetch.js'
 
-function TaskApi() {
-  const {
-    data: tasks,
-    loading,
-    error,
-  } = useFetch(
+const translations = {
+  'delectus aut autem': 'Revisar las tareas pendientes',
+  'quis ut nam facilis et officia qui': 'Organizar las actividades del día',
+  'fugiat veniam minus': 'Completar las actividades programadas',
+  'et porro tempora': 'Revisar las actividades completadas',
+  'laboriosam mollitia et enim quasi adipisci quia provident illum':
+    'Avanzar con el proyecto de desarrollo web',
+}
+
+export default function TaskApi() {
+  const { data, loading, error } = useFetch(
     'https://jsonplaceholder.typicode.com/todos?_limit=5'
   )
 
-  const taskNames = {
-    'delectus aut autem': 'Completar tareas pendientes',
-    'quis ut nam facilis et officia qui': 'Organizar actividades',
-    'fugiat veniam minus': 'Revisar tareas del día',
-    'et porro tempora': 'Actualizar lista de tareas',
-    'laboriosam mollitia et enim quasi adipisci quia provident illum':
-      'Preparar actividades nuevas',
-  }
-
-  if (loading) {
-    return (
-      <section className="task-card api-card">
-        <h2>Tareas de ejemplo de la API</h2>
-        <p>Cargando tareas...</p>
-      </section>
-    )
-  }
-
-  if (error) {
-    return (
-      <section className="task-card api-card">
-        <h2>Tareas de ejemplo de la API</h2>
-        <p>No se pudieron cargar las tareas: {error}</p>
-      </section>
-    )
-  }
-
   return (
-    <section className="task-card api-card">
-      <div className="api-header">
+    <section className="card api-card">
+      <div className="section-heading">
         <div>
           <h2>Tareas de ejemplo de la API</h2>
-          <p>Datos obtenidos desde JSONPlaceholder</p>
+          <p>Datos externos obtenidos con useFetch</p>
         </div>
-
-        <span className="api-count">
-          {tasks.length} tareas
-        </span>
       </div>
 
-      <div className="api-task-list">
-        {tasks.map((task) => (
-          <div className="api-task-item" key={task.id}>
-            <span className="api-task-title">
-              {taskNames[task.title] || task.title}
-            </span>
+      {loading && <p role="status">Cargando tareas...</p>}
 
-            <span
-              className={`task-status ${
-                task.completed
-                  ? 'status-done'
-                  : 'status-pending'
-              }`}
-            >
-              {task.completed ? 'Completada' : 'Pendiente'}
-            </span>
-          </div>
-        ))}
-      </div>
+      {error && <p role="alert">No se pudieron cargar las tareas.</p>}
+
+      {!loading && !error && (
+        <div className="api-list">
+          {data.map((task) => (
+            <div className="api-task" key={task.id}>
+              <span>
+                {translations[task.title] ?? task.title}
+              </span>
+
+              <span
+                className={`status ${
+                  task.completed ? 'done' : 'pending'
+                }`}
+              >
+                {task.completed ? 'Completada' : 'Pendiente'}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </section>
   )
 }
-
-export default TaskApi

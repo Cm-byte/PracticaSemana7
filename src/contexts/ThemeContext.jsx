@@ -1,12 +1,13 @@
-import { useState } from 'react'
-import { ThemeContext } from './theme.js'
+import { useContext } from 'react'
+import ThemeContext from './theme-context.js'
+import useLocalStorage from '../hooks/useLocalStorage.js'
 
 export function ThemeProvider({ children }) {
-  const [theme, setTheme] = useState('claro')
+  const [theme, setTheme] = useLocalStorage('taskflow-theme', 'claro')
 
-  const toggleTheme = () => {
-    setTheme((currentTheme) =>
-      currentTheme === 'claro' ? 'oscuro' : 'claro'
+  function toggleTheme() {
+    setTheme((current) =>
+      current === 'claro' ? 'oscuro' : 'claro'
     )
   }
 
@@ -15,4 +16,18 @@ export function ThemeProvider({ children }) {
       {children}
     </ThemeContext.Provider>
   )
+}
+
+// This hook must be exported alongside the provider for consumers to access the context.
+// eslint-disable-next-line react-refresh/only-export-components
+export function useTheme() {
+  const context = useContext(ThemeContext)
+
+  if (context === undefined) {
+    throw new Error(
+      'useTheme debe utilizarse dentro de ThemeProvider'
+    )
+  }
+
+  return context
 }
